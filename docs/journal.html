@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Aibar Kobdabayev" />
+
+<meta name="date" content="2020-11-25" />
+
+<title>Journal (reproducible report)</title>
+
+<script src="site_libs/header-attrs-2.5/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">MyLabJournal</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="journal.html">Journal</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Class notes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dictionary.html">Dictionary</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+    <li>
+      <a href="ggplot_graphs.html">ggplot graphs</a>
+    </li>
+    <li>
+      <a href="machine_learning.html">machine learning</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Journal (reproducible report)</h1>
+<h4 class="author">Aibar Kobdabayev</h4>
+<h4 class="date">2020-11-25</h4>
+
+</div>
+
+
+<div id="challenge-number1" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Challenge number#1</h1>
+<p>Last compiled: 2020-11-26</p>
+<p>Analyze the sales by location (state) with a bar plot. Since state and city are multiple features (variables), they should be split. Which state has the highes revenue?</p>
+<div id="load-libraries" class="section level2" number="1.1">
+<h2 number="1.1"><span class="header-section-number">1.1</span> Load libraries:</h2>
+<pre class="r"><code>library(tidyverse)
+library(readxl)</code></pre>
+</div>
+<div id="import-files" class="section level2" number="1.2">
+<h2 number="1.2"><span class="header-section-number">1.2</span> Import files:</h2>
+<pre class="r"><code>bikes_tbl &lt;- readxl::read_excel(&quot;./00_data/01_bike_sales/01_raw_data/bikes.xlsx&quot;)
+orderlines_tbl &lt;- readxl::read_excel(&quot;./00_data/01_bike_sales/01_raw_data/orderlines.xlsx&quot;)
+bikeshops_tbl &lt;- readxl::read_excel(&quot;./00_data/01_bike_sales/01_raw_data/bikeshops.xlsx&quot;)</code></pre>
+</div>
+<div id="examine-data-for-imported-tables" class="section level2" number="1.3">
+<h2 number="1.3"><span class="header-section-number">1.3</span> Examine data for imported tables:</h2>
+<pre class="r"><code>bikeshops_tbl</code></pre>
+<pre><code>## # A tibble: 30 x 5
+##    bikeshop.id name                  location                          lat   lng
+##          &lt;dbl&gt; &lt;chr&gt;                 &lt;chr&gt;                           &lt;dbl&gt; &lt;dbl&gt;
+##  1           1 Zum Goldenen Lenker   Berlin, Berlin                   52.5 13.4 
+##  2           2 AlexandeRad           Hamburg, Hamburg                 53.6 10.0 
+##  3           3 Fahrradladen 16       Munich, Bavaria                  48.2 11.6 
+##  4           4 Bikestation Köln      Cologne, North Rhine-Westphalia  50.9  6.95
+##  5           5 Montimare             Frankfurt, Hesse                 50.1  8.68
+##  6           6 fahrschneller         Stuttgart, Baden-Württemberg     48.8  9.18
+##  7           7 Rad Ab                Düsseldorf, North Rhine-Westph…  51.2  6.79
+##  8           8 Lucky Bike            Dortmund, North Rhine-Westphal…  51.5  7.47
+##  9           9 Zweirad-Center Stadl… Essen, North Rhine-Westphalia    51.5  7.01
+## 10          10 WITT-RAD              Bremen, Bremen                   53.1  8.83
+## # … with 20 more rows</code></pre>
+<pre class="r"><code>orderlines_tbl</code></pre>
+<pre><code>## # A tibble: 15,644 x 7
+##    ...1  order.id order.line order.date          customer.id product.id quantity
+##    &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt; &lt;dttm&gt;                    &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+##  1 1            1          1 2015-01-07 00:00:00           2       2681        1
+##  2 2            1          2 2015-01-07 00:00:00           2       2411        1
+##  3 3            2          1 2015-01-10 00:00:00          10       2629        1
+##  4 4            2          2 2015-01-10 00:00:00          10       2137        1
+##  5 5            3          1 2015-01-10 00:00:00           6       2367        1
+##  6 6            3          2 2015-01-10 00:00:00           6       1973        1
+##  7 7            3          3 2015-01-10 00:00:00           6       2422        1
+##  8 8            3          4 2015-01-10 00:00:00           6       2655        1
+##  9 9            3          5 2015-01-10 00:00:00           6       2247        1
+## 10 10           4          1 2015-01-11 00:00:00          22       2408        1
+## # … with 15,634 more rows</code></pre>
+<pre class="r"><code>bikes_tbl</code></pre>
+<pre><code>## # A tibble: 231 x 9
+##    bike.id model  model.year frame.material weight price category gender url    
+##      &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;  
+##  1    2875 Aeroa…       2020 carbon           7.6   4579 Road - … unisex https:…
+##  2    2873 Aeroa…       2020 carbon           7.27  6919 Road - … unisex https:…
+##  3    2874 Aeroa…       2020 carbon           7.1   6429 Road - … unisex https:…
+##  4    2876 Aeroa…       2020 carbon           7.73  5069 Road - … unisex https:…
+##  5    2877 Aeroa…       2020 carbon           7.83  3609 Road - … unisex https:…
+##  6    2225 Aeroa…       2019 carbon           6.8   6139 Road - … unisex https:…
+##  7    2091 Aeroa…       2019 carbon           6.8   5359 Road - … unisex https:…
+##  8    2086 Aeroa…       2021 carbon           7.6   2629 Road - … unisex https:…
+##  9    2088 Aeroa…       2020 carbon           7.3   3699 Road - … unisex https:…
+## 10    2120 Aeroa…       2020 carbon           7.2   3219 Road - … female https:…
+## # … with 221 more rows</code></pre>
+</div>
+<div id="data-manipulation.-join-tables" class="section level2" number="1.4">
+<h2 number="1.4"><span class="header-section-number">1.4</span> Data manipulation. Join tables:</h2>
+<pre class="r"><code>bike_orderlines_joined_tbl &lt;- orderlines_tbl %&gt;%
+  dplyr::left_join(bikes_tbl, by = c(&quot;product.id&quot; = &quot;bike.id&quot;)) %&gt;%
+  dplyr::left_join(bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))
+bike_orderlines_joined_tbl %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 15,644
+## Columns: 19
+## $ ...1           &lt;chr&gt; &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;10&quot;, &quot;11…
+## $ order.id       &lt;dbl&gt; 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, 5, 5, 6, 6, 6, 6, …
+## $ order.line     &lt;dbl&gt; 1, 2, 1, 2, 1, 2, 3, 4, 5, 1, 1, 2, 3, 4, 1, 2, 3, 4, …
+## $ order.date     &lt;dttm&gt; 2015-01-07, 2015-01-07, 2015-01-10, 2015-01-10, 2015-…
+## $ customer.id    &lt;dbl&gt; 2, 2, 10, 10, 6, 6, 6, 6, 6, 22, 8, 8, 8, 8, 16, 16, 1…
+## $ product.id     &lt;dbl&gt; 2681, 2411, 2629, 2137, 2367, 1973, 2422, 2655, 2247, …
+## $ quantity       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, …
+## $ model          &lt;chr&gt; &quot;Spectral CF 7 WMN&quot;, &quot;Ultimate CF SLX Disc 8.0 ETAP&quot;, …
+## $ model.year     &lt;dbl&gt; 2021, 2020, 2021, 2019, 2020, 2020, 2020, 2021, 2020, …
+## $ frame.material &lt;chr&gt; &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbon&quot;, &quot;aluminium&quot;, &quot;…
+## $ weight         &lt;dbl&gt; 13.80, 7.44, 14.06, 8.80, 11.50, 8.80, 8.20, 8.85, 14.…
+## $ price          &lt;dbl&gt; 3119, 5359, 2729, 1749, 1219, 1359, 2529, 1559, 3899, …
+## $ category       &lt;chr&gt; &quot;Mountain - Trail - Spectral&quot;, &quot;Road - Race - Ultimate…
+## $ gender         &lt;chr&gt; &quot;female&quot;, &quot;unisex&quot;, &quot;unisex&quot;, &quot;unisex&quot;, &quot;unisex&quot;, &quot;uni…
+## $ url            &lt;chr&gt; &quot;https://www.canyon.com/en-de/mountain-bikes/trail-bik…
+## $ name           &lt;chr&gt; &quot;AlexandeRad&quot;, &quot;AlexandeRad&quot;, &quot;WITT-RAD&quot;, &quot;WITT-RAD&quot;, …
+## $ location       &lt;chr&gt; &quot;Hamburg, Hamburg&quot;, &quot;Hamburg, Hamburg&quot;, &quot;Bremen, Breme…
+## $ lat            &lt;dbl&gt; 53.57532, 53.57532, 53.07379, 53.07379, 48.78234, 48.7…
+## $ lng            &lt;dbl&gt; 10.015340, 10.015340, 8.826754, 8.826754, 9.180819, 9.…</code></pre>
+</div>
+<div id="wrangling-data" class="section level2" number="1.5">
+<h2 number="1.5"><span class="header-section-number">1.5</span> Wrangling data:</h2>
+<pre class="r"><code>bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
+    tidyr::separate(col    = location,
+           into   = c(&quot;city&quot;, &quot;state&quot;),
+           sep    = &quot;, &quot;) %&gt;%
+  dplyr::mutate(total_price = price * quantity) %&gt;%
+  dplyr::select(order.id, contains(&quot;order&quot;), city, state, quantity, total_price, everything()) %&gt;%
+  rename(bikeshop = name) %&gt;%
+  magrittr::set_names(names(.) %&gt;% stringr::str_replace_all(&quot;\\.&quot;, &quot;_&quot;))
+
+bike_orderlines_wrangled_tbl</code></pre>
+<pre><code>## # A tibble: 15,644 x 21
+##    order_id order_line order_date          city  state quantity total_price
+##       &lt;dbl&gt;      &lt;dbl&gt; &lt;dttm&gt;              &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;       &lt;dbl&gt;
+##  1        1          1 2015-01-07 00:00:00 Hamb… Hamb…        1        3119
+##  2        1          2 2015-01-07 00:00:00 Hamb… Hamb…        1        5359
+##  3        2          1 2015-01-10 00:00:00 Brem… Brem…        1        2729
+##  4        2          2 2015-01-10 00:00:00 Brem… Brem…        1        1749
+##  5        3          1 2015-01-10 00:00:00 Stut… Bade…        1        1219
+##  6        3          2 2015-01-10 00:00:00 Stut… Bade…        1        1359
+##  7        3          3 2015-01-10 00:00:00 Stut… Bade…        1        2529
+##  8        3          4 2015-01-10 00:00:00 Stut… Bade…        1        1559
+##  9        3          5 2015-01-10 00:00:00 Stut… Bade…        1        3899
+## 10        4          1 2015-01-11 00:00:00 Augs… Bava…        1        6629
+## # … with 15,634 more rows, and 14 more variables: `___1` &lt;chr&gt;,
+## #   customer_id &lt;dbl&gt;, product_id &lt;dbl&gt;, model &lt;chr&gt;, model_year &lt;dbl&gt;,
+## #   frame_material &lt;chr&gt;, weight &lt;dbl&gt;, price &lt;dbl&gt;, category &lt;chr&gt;,
+## #   gender &lt;chr&gt;, url &lt;chr&gt;, bikeshop &lt;chr&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
+</div>
+<div id="business-insights" class="section level2" number="1.6">
+<h2 number="1.6"><span class="header-section-number">1.6</span> Business insights</h2>
+<p>Creating relevant tables and using gglpot2 package for data visualization.</p>
+<pre class="r"><code>sales_by_states_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
+  select(order_date, total_price, state) %&gt;%
+  mutate(year = year(order_date)) %&gt;%
+  group_by(year, state) %&gt;%
+  summarise(sales = sum(total_price)) %&gt;%
+  ungroup() %&gt;%
+  mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;,
+                                            decimal.mark = &quot;,&quot;,
+                                            prefix = &quot;&quot;,
+                                            suffix = &quot; €&quot;))
+sales_by_states_tbl</code></pre>
+<pre><code>## # A tibble: 60 x 4
+##     year state                           sales sales_text 
+##    &lt;dbl&gt; &lt;chr&gt;                           &lt;dbl&gt; &lt;chr&gt;      
+##  1  2015 Baden-Württemberg             1031924 1.031.924 €
+##  2  2015 Bavaria                       1301461 1.301.461 €
+##  3  2015 Berlin                          95853 95.853 €   
+##  4  2015 Bremen                        1395912 1.395.912 €
+##  5  2015 Hamburg                        423090 423.090 €  
+##  6  2015 Hesse                          308609 308.609 €  
+##  7  2015 Lower Saxony                   584386 584.386 €  
+##  8  2015 Mecklenburg-Western Pomerania  222003 222.003 €  
+##  9  2015 North Rhine-Westphalia        3735092 3.735.092 €
+## 10  2015 Saxony                         238371 238.371 €  
+## # … with 50 more rows</code></pre>
+<pre class="r"><code>sales_by_states_tbl %&gt;%
+  ggplot2::ggplot(aes(x = year, y = sales, fill = state)) +
+  ggplot2::geom_col() +
+  ggplot2::facet_wrap(~ state) +
+  ggplot2::scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;,
+                                                             decimal.mark = &quot;,&quot;,
+                                                             prefix = &quot;&quot;,
+                                                             suffix = &quot; €&quot;)) +
+  ggplot2::theme(axis.text = element_text(angle = 45, hjust = 1))</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>  ggplot2::labs(title = &quot;Sales by states&quot;)</code></pre>
+<pre><code>## $title
+## [1] &quot;Sales by states&quot;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;labels&quot;</code></pre>
+</div>
+<div id="second-level-header" class="section level2" number="1.7">
+<h2 number="1.7"><span class="header-section-number">1.7</span> Second level header</h2>
+<p>You can add more headers by adding more hashtags. These won’t be put into the table of contents</p>
+<div id="third-level-header" class="section level3" number="1.7.1">
+<h3 number="1.7.1"><span class="header-section-number">1.7.1</span> third level header</h3>
+<p>Here’s an even lower level header</p>
+</div>
+</div>
+</div>
+<div id="my-second-post-note-the-order" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> My second post (note the order)</h1>
+<p>Last compiled: 2020-11-26</p>
+<p>I’m writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom</p>
+</div>
+<div id="adding-r-stuff" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Adding R stuff</h1>
+<p>So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place.</p>
+<p>So, let’s say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:</p>
+<pre class="r"><code>samples &lt;- rnorm(100, mean=0, sd=1)
+hist(samples)</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You’ll learn that all of these things and more can be customized in each R code block.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

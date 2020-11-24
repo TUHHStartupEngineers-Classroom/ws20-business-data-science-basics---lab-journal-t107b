@@ -1,7 +1,7 @@
 ---
 title: "Journal (reproducible report)"
-author: "Joschka Schwarz"
-date: "2020-11-05"
+author: "Aibar Kobdabayev"
+date: "2020-11-25"
 output:
   html_document:
     toc: true
@@ -15,16 +15,86 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 ```
-
-**IMPORTANT:** You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.
-
-This is an `.Rmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
-
-# My first post
+# Challenge number#1
 
 Last compiled: `r Sys.Date()`
 
-Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left. 
+Analyze the sales by location (state) with a bar plot. Since state and city are multiple features (variables), they should be split. Which state has the highes revenue? 
+
+## Load libraries:
+```{r}
+library(tidyverse)
+library(readxl)
+
+```
+
+## Import files:
+```{r}
+bikes_tbl <- readxl::read_excel("./00_data/01_bike_sales/01_raw_data/bikes.xlsx")
+orderlines_tbl <- readxl::read_excel("./00_data/01_bike_sales/01_raw_data/orderlines.xlsx")
+bikeshops_tbl <- readxl::read_excel("./00_data/01_bike_sales/01_raw_data/bikeshops.xlsx")
+```
+
+## Examine data for imported tables:
+```{r}
+bikeshops_tbl
+orderlines_tbl
+bikes_tbl
+```
+## Data manipulation. Join tables:
+```{r}
+bike_orderlines_joined_tbl <- orderlines_tbl %>%
+  dplyr::left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
+  dplyr::left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
+bike_orderlines_joined_tbl %>% glimpse()
+```
+
+## Wrangling data:
+
+```{r}
+bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
+    tidyr::separate(col    = location,
+           into   = c("city", "state"),
+           sep    = ", ") %>%
+  dplyr::mutate(total_price = price * quantity) %>%
+  dplyr::select(order.id, contains("order"), city, state, quantity, total_price, everything()) %>%
+  rename(bikeshop = name) %>%
+  magrittr::set_names(names(.) %>% stringr::str_replace_all("\\.", "_"))
+
+bike_orderlines_wrangled_tbl
+```
+## Business insights
+Creating relevant tables and using gglpot2 package for data visualization.
+
+```{r}
+sales_by_states_tbl <- bike_orderlines_wrangled_tbl %>%
+  select(order_date, total_price, state) %>%
+  mutate(year = year(order_date)) %>%
+  group_by(year, state) %>%
+  summarise(sales = sum(total_price)) %>%
+  ungroup() %>%
+  mutate(sales_text = scales::dollar(sales, big.mark = ".",
+                                            decimal.mark = ",",
+                                            prefix = "",
+                                            suffix = " €"))
+sales_by_states_tbl
+```
+```{r}
+sales_by_states_tbl %>%
+  ggplot2::ggplot(aes(x = year, y = sales, fill = state)) +
+  ggplot2::geom_col() +
+  ggplot2::facet_wrap(~ state) +
+  ggplot2::scale_y_continuous(labels = scales::dollar_format(big.mark = ".",
+                                                             decimal.mark = ",",
+                                                             prefix = "",
+                                                             suffix = " €")) +
+  ggplot2::theme(axis.text = element_text(angle = 45, hjust = 1))
+
+  ggplot2::labs(title = "Sales by states")
+  
+```
+
+
 
 ## Second level header
 
