@@ -584,23 +584,519 @@ sales_by_states_tbl</code></pre>
 <li><p>Get some data via an API. There are millions of providers, that offer API access for free and have good documentation about how to query their service. You just have to google them. You can use whatever service you want. For example, you can get data about your listening history (spotify), get data about flights (skyscanner) or just check the weather forecast.</p></li>
 <li><p>Scrape one of the competitor websites of canyon (either <a href="https://www.rosebikes.de/" class="uri">https://www.rosebikes.de/</a> or <a href="https://www.radon-bikes.de" class="uri">https://www.radon-bikes.de</a>) and create a small database. The database should contain the model names and prices for at least one category. Use the selectorgadget to get a good understanding of the website structure. For the challenge a) I am going use Rick and Morty API from <a href="https://rickandmortyapi.com" class="uri">https://rickandmortyapi.com</a>.</p></li>
 </ol>
-<div id="third-level-header" class="section level3" number="2.0.1">
-<h3 number="2.0.1"><span class="header-section-number">2.0.1</span> third level header</h3>
+<pre class="r"><code>library(tidyverse)
+
+sw_api &lt;- function(weatherUrl) {
+  resp &lt;- httr::GET(weatherUrl)
+  httr::stop_for_status(resp) # automatically throws an error if a request did not succeed
+}
+
+resp &lt;- sw_api(&quot;https://api.openweathermap.org/data/2.5/onecall?lat=53.5511&amp;lon=9.9937&amp;appid=d93321800837c9ff4a16acd678b13513&quot;)
+resp</code></pre>
+<pre><code>## Response [https://api.openweathermap.org/data/2.5/onecall?lat=53.5511&amp;lon=9.9937&amp;appid=d93321800837c9ff4a16acd678b13513]
+##   Date: 2020-12-04 21:34
+##   Status: 200
+##   Content-Type: application/json; charset=utf-8
+##   Size: 18.8 kB</code></pre>
+<pre class="r"><code>rawToChar(resp$content)</code></pre>
+<pre><code>## [1] &quot;{\&quot;lat\&quot;:53.55,\&quot;lon\&quot;:9.99,\&quot;timezone\&quot;:\&quot;Europe/Berlin\&quot;,\&quot;timezone_offset\&quot;:3600,\&quot;current\&quot;:{\&quot;dt\&quot;:1607117695,\&quot;sunrise\&quot;:1607066294,\&quot;sunset\&quot;:1607094173,\&quot;temp\&quot;:276.12,\&quot;feels_like\&quot;:271.44,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:74,\&quot;dew_point\&quot;:272.09,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:0,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:3.6,\&quot;wind_deg\&quot;:110,\&quot;weather\&quot;:[{\&quot;id\&quot;:500,\&quot;main\&quot;:\&quot;Rain\&quot;,\&quot;description\&quot;:\&quot;light rain\&quot;,\&quot;icon\&quot;:\&quot;10n\&quot;}],\&quot;rain\&quot;:{\&quot;1h\&quot;:0.12}},\&quot;minutely\&quot;:[{\&quot;dt\&quot;:1607117700,\&quot;precipitation\&quot;:0.115},{\&quot;dt\&quot;:1607117760,\&quot;precipitation\&quot;:0.1018},{\&quot;dt\&quot;:1607117820,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607117880,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607117940,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607118000,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607118060,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607118120,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607118180,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607118240,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607118300,\&quot;precipitation\&quot;:0.1},{\&quot;dt\&quot;:1607118360,\&quot;precipitation\&quot;:0.2798},{\&quot;dt\&quot;:1607118420,\&quot;precipitation\&quot;:0.4596},{\&quot;dt\&quot;:1607118480,\&quot;precipitation\&quot;:0.6394},{\&quot;dt\&quot;:1607118540,\&quot;precipitation\&quot;:0.8192},{\&quot;dt\&quot;:1607118600,\&quot;precipitation\&quot;:0.999},{\&quot;dt\&quot;:1607118660,\&quot;precipitation\&quot;:1.1544},{\&quot;dt\&quot;:1607118720,\&quot;precipitation\&quot;:1.3098},{\&quot;dt\&quot;:1607118780,\&quot;precipitation\&quot;:1.4652},{\&quot;dt\&quot;:1607118840,\&quot;precipitation\&quot;:1.6206},{\&quot;dt\&quot;:1607118900,\&quot;precipitation\&quot;:1.776},{\&quot;dt\&quot;:1607118960,\&quot;precipitation\&quot;:1.5938},{\&quot;dt\&quot;:1607119020,\&quot;precipitation\&quot;:1.4116},{\&quot;dt\&quot;:1607119080,\&quot;precipitation\&quot;:1.2294},{\&quot;dt\&quot;:1607119140,\&quot;precipitation\&quot;:1.0472},{\&quot;dt\&quot;:1607119200,\&quot;precipitation\&quot;:0.865},{\&quot;dt\&quot;:1607119260,\&quot;precipitation\&quot;:0.7552},{\&quot;dt\&quot;:1607119320,\&quot;precipitation\&quot;:0.6454},{\&quot;dt\&quot;:1607119380,\&quot;precipitation\&quot;:0.5356},{\&quot;dt\&quot;:1607119440,\&quot;precipitation\&quot;:0.4258},{\&quot;dt\&quot;:1607119500,\&quot;precipitation\&quot;:0.316},{\&quot;dt\&quot;:1607119560,\&quot;precipitation\&quot;:0.2836},{\&quot;dt\&quot;:1607119620,\&quot;precipitation\&quot;:0.2512},{\&quot;dt\&quot;:1607119680,\&quot;precipitation\&quot;:0.2188},{\&quot;dt\&quot;:1607119740,\&quot;precipitation\&quot;:0.1864},{\&quot;dt\&quot;:1607119800,\&quot;precipitation\&quot;:0.154},{\&quot;dt\&quot;:1607119860,\&quot;precipitation\&quot;:0.1316},{\&quot;dt\&quot;:1607119920,\&quot;precipitation\&quot;:0.1092},{\&quot;dt\&quot;:1607119980,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120040,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120100,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120160,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120220,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120280,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120340,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120400,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120460,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120520,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120580,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120640,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120700,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120760,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120820,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120880,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607120940,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607121000,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607121060,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607121120,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607121180,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607121240,\&quot;precipitation\&quot;:0},{\&quot;dt\&quot;:1607121300,\&quot;precipitation\&quot;:0}],\&quot;hourly\&quot;:[{\&quot;dt\&quot;:1607115600,\&quot;temp\&quot;:276.12,\&quot;feels_like\&quot;:272.18,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:74,\&quot;dew_point\&quot;:272.09,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:0,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.55,\&quot;wind_deg\&quot;:94,\&quot;weather\&quot;:[{\&quot;id\&quot;:800,\&quot;main\&quot;:\&quot;Clear\&quot;,\&quot;description\&quot;:\&quot;clear sky\&quot;,\&quot;icon\&quot;:\&quot;01n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607119200,\&quot;temp\&quot;:275.05,\&quot;feels_like\&quot;:270.52,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:82,\&quot;dew_point\&quot;:272.41,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:49,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:3.46,\&quot;wind_deg\&quot;:92,\&quot;weather\&quot;:[{\&quot;id\&quot;:601,\&quot;main\&quot;:\&quot;Snow\&quot;,\&quot;description\&quot;:\&quot;snow\&quot;,\&quot;icon\&quot;:\&quot;13n\&quot;}],\&quot;pop\&quot;:0.2,\&quot;snow\&quot;:{\&quot;1h\&quot;:0.87}},{\&quot;dt\&quot;:1607122800,\&quot;temp\&quot;:274.24,\&quot;feels_like\&quot;:270.28,\&quot;pressure\&quot;:995,\&quot;humidity\&quot;:89,\&quot;dew_point\&quot;:272.69,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:78,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.72,\&quot;wind_deg\&quot;:129,\&quot;weather\&quot;:[{\&quot;id\&quot;:803,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;broken clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607126400,\&quot;temp\&quot;:273.31,\&quot;feels_like\&quot;:270.14,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:272.8,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:94,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.61,\&quot;wind_deg\&quot;:109,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607130000,\&quot;temp\&quot;:273.49,\&quot;feels_like\&quot;:269.22,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:272.83,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:99,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:3.19,\&quot;wind_deg\&quot;:65,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607133600,\&quot;temp\&quot;:272.94,\&quot;feels_like\&quot;:268.92,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:97,\&quot;dew_point\&quot;:271.53,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.78,\&quot;wind_deg\&quot;:86,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607137200,\&quot;temp\&quot;:272.48,\&quot;feels_like\&quot;:268.22,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:97,\&quot;dew_point\&quot;:271.33,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:95,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:3.03,\&quot;wind_deg\&quot;:80,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607140800,\&quot;temp\&quot;:272.57,\&quot;feels_like\&quot;:268.43,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:97,\&quot;dew_point\&quot;:271.39,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:97,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.88,\&quot;wind_deg\&quot;:84,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607144400,\&quot;temp\&quot;:273,\&quot;feels_like\&quot;:269.22,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:97,\&quot;dew_point\&quot;:271.52,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:97,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.45,\&quot;wind_deg\&quot;:101,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607148000,\&quot;temp\&quot;:272.21,\&quot;feels_like\&quot;:269.01,\&quot;pressure\&quot;:994,\&quot;humidity\&quot;:98,\&quot;dew_point\&quot;:271.4,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:98,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.49,\&quot;wind_deg\&quot;:102,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607151600,\&quot;temp\&quot;:271.9,\&quot;feels_like\&quot;:268.5,\&quot;pressure\&quot;:995,\&quot;humidity\&quot;:98,\&quot;dew_point\&quot;:271.22,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:49,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.72,\&quot;wind_deg\&quot;:108,\&quot;weather\&quot;:[{\&quot;id\&quot;:802,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;scattered clouds\&quot;,\&quot;icon\&quot;:\&quot;03n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607155200,\&quot;temp\&quot;:273.07,\&quot;feels_like\&quot;:269.16,\&quot;pressure\&quot;:996,\&quot;humidity\&quot;:97,\&quot;dew_point\&quot;:271.69,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:75,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.65,\&quot;wind_deg\&quot;:140,\&quot;weather\&quot;:[{\&quot;id\&quot;:803,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;broken clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607158800,\&quot;temp\&quot;:273.6,\&quot;feels_like\&quot;:269.98,\&quot;pressure\&quot;:997,\&quot;humidity\&quot;:94,\&quot;dew_point\&quot;:271.88,\&quot;uvi\&quot;:0.17,\&quot;clouds\&quot;:83,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.25,\&quot;wind_deg\&quot;:170,\&quot;weather\&quot;:[{\&quot;id\&quot;:803,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;broken clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607162400,\&quot;temp\&quot;:274.28,\&quot;feels_like\&quot;:270.67,\&quot;pressure\&quot;:997,\&quot;humidity\&quot;:90,\&quot;dew_point\&quot;:271.95,\&quot;uvi\&quot;:0.24,\&quot;clouds\&quot;:87,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.26,\&quot;wind_deg\&quot;:224,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607166000,\&quot;temp\&quot;:275.19,\&quot;feels_like\&quot;:271.54,\&quot;pressure\&quot;:998,\&quot;humidity\&quot;:84,\&quot;dew_point\&quot;:272.18,\&quot;uvi\&quot;:0.31,\&quot;clouds\&quot;:89,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.3,\&quot;wind_deg\&quot;:208,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607169600,\&quot;temp\&quot;:275.63,\&quot;feels_like\&quot;:272.51,\&quot;pressure\&quot;:998,\&quot;humidity\&quot;:82,\&quot;dew_point\&quot;:272.51,\&quot;uvi\&quot;:0.3,\&quot;clouds\&quot;:92,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.57,\&quot;wind_deg\&quot;:212,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607173200,\&quot;temp\&quot;:275.8,\&quot;feels_like\&quot;:272.55,\&quot;pressure\&quot;:999,\&quot;humidity\&quot;:82,\&quot;dew_point\&quot;:272.95,\&quot;uvi\&quot;:0.26,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.78,\&quot;wind_deg\&quot;:188,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607176800,\&quot;temp\&quot;:275.38,\&quot;feels_like\&quot;:271.61,\&quot;pressure\&quot;:999,\&quot;humidity\&quot;:85,\&quot;dew_point\&quot;:273.08,\&quot;uvi\&quot;:0.13,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.55,\&quot;wind_deg\&quot;:149,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607180400,\&quot;temp\&quot;:274.53,\&quot;feels_like\&quot;:270.92,\&quot;pressure\&quot;:1000,\&quot;humidity\&quot;:90,\&quot;dew_point\&quot;:273.08,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.3,\&quot;wind_deg\&quot;:157,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607184000,\&quot;temp\&quot;:274.63,\&quot;feels_like\&quot;:271.05,\&quot;pressure\&quot;:1000,\&quot;humidity\&quot;:92,\&quot;dew_point\&quot;:273.57,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.35,\&quot;wind_deg\&quot;:193,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607187600,\&quot;temp\&quot;:275.08,\&quot;feels_like\&quot;:271.8,\&quot;pressure\&quot;:1001,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:274.39,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.12,\&quot;wind_deg\&quot;:224,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607191200,\&quot;temp\&quot;:275.35,\&quot;feels_like\&quot;:272.44,\&quot;pressure\&quot;:1001,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:274.67,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.65,\&quot;wind_deg\&quot;:149,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607194800,\&quot;temp\&quot;:275.21,\&quot;feels_like\&quot;:271.89,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:274.55,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.2,\&quot;wind_deg\&quot;:122,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607198400,\&quot;temp\&quot;:274.61,\&quot;feels_like\&quot;:271.71,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:273.98,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.47,\&quot;wind_deg\&quot;:137,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607202000,\&quot;temp\&quot;:274.37,\&quot;feels_like\&quot;:271.33,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:94,\&quot;dew_point\&quot;:273.65,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.58,\&quot;wind_deg\&quot;:142,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607205600,\&quot;temp\&quot;:274.18,\&quot;feels_like\&quot;:271.56,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:94,\&quot;dew_point\&quot;:273.36,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:0.94,\&quot;wind_deg\&quot;:160,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607209200,\&quot;temp\&quot;:274.07,\&quot;feels_like\&quot;:271.32,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:93,\&quot;dew_point\&quot;:273.15,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.08,\&quot;wind_deg\&quot;:146,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607212800,\&quot;temp\&quot;:274.07,\&quot;feels_like\&quot;:271.18,\&quot;pressure\&quot;:1004,\&quot;humidity\&quot;:93,\&quot;dew_point\&quot;:273.16,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.28,\&quot;wind_deg\&quot;:121,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607216400,\&quot;temp\&quot;:273.97,\&quot;feels_like\&quot;:271.03,\&quot;pressure\&quot;:1004,\&quot;humidity\&quot;:94,\&quot;dew_point\&quot;:273.06,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:92,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.36,\&quot;wind_deg\&quot;:78,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607220000,\&quot;temp\&quot;:273.79,\&quot;feels_like\&quot;:270.51,\&quot;pressure\&quot;:1004,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:272.94,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:79,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.84,\&quot;wind_deg\&quot;:100,\&quot;weather\&quot;:[{\&quot;id\&quot;:803,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;broken clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607223600,\&quot;temp\&quot;:273.62,\&quot;feels_like\&quot;:270.32,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:272.92,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:87,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.86,\&quot;wind_deg\&quot;:66,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607227200,\&quot;temp\&quot;:273.74,\&quot;feels_like\&quot;:270.39,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:273.11,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:90,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.92,\&quot;wind_deg\&quot;:84,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607230800,\&quot;temp\&quot;:273.61,\&quot;feels_like\&quot;:270.68,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:273.02,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:92,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.33,\&quot;wind_deg\&quot;:33,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607234400,\&quot;temp\&quot;:274.07,\&quot;feels_like\&quot;:271.17,\&quot;pressure\&quot;:1004,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:273.48,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:94,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.35,\&quot;wind_deg\&quot;:62,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607238000,\&quot;temp\&quot;:274.66,\&quot;feels_like\&quot;:271.29,\&quot;pressure\&quot;:1004,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:274,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.15,\&quot;wind_deg\&quot;:16,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607241600,\&quot;temp\&quot;:274.82,\&quot;feels_like\&quot;:271.77,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:274.31,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.76,\&quot;wind_deg\&quot;:25,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0.06},{\&quot;dt\&quot;:1607245200,\&quot;temp\&quot;:275.93,\&quot;feels_like\&quot;:272.45,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:94,\&quot;dew_point\&quot;:275.15,\&quot;uvi\&quot;:0.08,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.56,\&quot;wind_deg\&quot;:12,\&quot;weather\&quot;:[{\&quot;id\&quot;:500,\&quot;main\&quot;:\&quot;Rain\&quot;,\&quot;description\&quot;:\&quot;light rain\&quot;,\&quot;icon\&quot;:\&quot;10d\&quot;}],\&quot;pop\&quot;:0.2,\&quot;rain\&quot;:{\&quot;1h\&quot;:0.15}},{\&quot;dt\&quot;:1607248800,\&quot;temp\&quot;:276.27,\&quot;feels_like\&quot;:273.12,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:94,\&quot;dew_point\&quot;:275.54,\&quot;uvi\&quot;:0.05,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:2.17,\&quot;wind_deg\&quot;:24,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0.06},{\&quot;dt\&quot;:1607252400,\&quot;temp\&quot;:276.18,\&quot;feels_like\&quot;:273.3,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:275.67,\&quot;uvi\&quot;:0.07,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.84,\&quot;wind_deg\&quot;:4,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0.02},{\&quot;dt\&quot;:1607256000,\&quot;temp\&quot;:276.22,\&quot;feels_like\&quot;:273.5,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:275.78,\&quot;uvi\&quot;:0.07,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.61,\&quot;wind_deg\&quot;:23,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0.01},{\&quot;dt\&quot;:1607259600,\&quot;temp\&quot;:276.49,\&quot;feels_like\&quot;:273.98,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:275.92,\&quot;uvi\&quot;:0.08,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.34,\&quot;wind_deg\&quot;:40,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607263200,\&quot;temp\&quot;:276.37,\&quot;feels_like\&quot;:274.58,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:275.83,\&quot;uvi\&quot;:0.04,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:0.33,\&quot;wind_deg\&quot;:42,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607266800,\&quot;temp\&quot;:275.95,\&quot;feels_like\&quot;:273.67,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:275.43,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:0.92,\&quot;wind_deg\&quot;:120,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607270400,\&quot;temp\&quot;:275.96,\&quot;feels_like\&quot;:273.62,\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:275.25,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:0.97,\&quot;wind_deg\&quot;:105,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607274000,\&quot;temp\&quot;:275.37,\&quot;feels_like\&quot;:272.57,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:95,\&quot;dew_point\&quot;:274.74,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.5,\&quot;wind_deg\&quot;:114,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607277600,\&quot;temp\&quot;:274.97,\&quot;feels_like\&quot;:272.68,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:274.41,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:0.71,\&quot;wind_deg\&quot;:121,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607281200,\&quot;temp\&quot;:275.07,\&quot;feels_like\&quot;:272.41,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:274.52,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:1.26,\&quot;wind_deg\&quot;:110,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0},{\&quot;dt\&quot;:1607284800,\&quot;temp\&quot;:275.25,\&quot;feels_like\&quot;:272.87,\&quot;pressure\&quot;:1002,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:274.73,\&quot;uvi\&quot;:0,\&quot;clouds\&quot;:100,\&quot;visibility\&quot;:10000,\&quot;wind_speed\&quot;:0.9,\&quot;wind_deg\&quot;:50,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04n\&quot;}],\&quot;pop\&quot;:0}],\&quot;daily\&quot;:[{\&quot;dt\&quot;:1607079600,\&quot;sunrise\&quot;:1607066294,\&quot;sunset\&quot;:1607094173,\&quot;temp\&quot;:{\&quot;day\&quot;:277.4,\&quot;min\&quot;:273.17,\&quot;max\&quot;:278.01,\&quot;night\&quot;:275.05,\&quot;eve\&quot;:273.99,\&quot;morn\&quot;:273.28},\&quot;feels_like\&quot;:{\&quot;day\&quot;:272.39,\&quot;night\&quot;:270.52,\&quot;eve\&quot;:269.04,\&quot;morn\&quot;:266.59},\&quot;pressure\&quot;:990,\&quot;humidity\&quot;:72,\&quot;dew_point\&quot;:272.01,\&quot;wind_speed\&quot;:4.25,\&quot;wind_deg\&quot;:151,\&quot;weather\&quot;:[{\&quot;id\&quot;:601,\&quot;main\&quot;:\&quot;Snow\&quot;,\&quot;description\&quot;:\&quot;snow\&quot;,\&quot;icon\&quot;:\&quot;13d\&quot;}],\&quot;clouds\&quot;:100,\&quot;pop\&quot;:0.2,\&quot;snow\&quot;:0.87,\&quot;uvi\&quot;:0.3},{\&quot;dt\&quot;:1607166000,\&quot;sunrise\&quot;:1607152775,\&quot;sunset\&quot;:1607180541,\&quot;temp\&quot;:{\&quot;day\&quot;:275.19,\&quot;min\&quot;:271.9,\&quot;max\&quot;:275.8,\&quot;night\&quot;:274.18,\&quot;eve\&quot;:275.08,\&quot;morn\&quot;:273},\&quot;feels_like\&quot;:{\&quot;day\&quot;:271.54,\&quot;night\&quot;:271.56,\&quot;eve\&quot;:271.8,\&quot;morn\&quot;:269.22},\&quot;pressure\&quot;:998,\&quot;humidity\&quot;:84,\&quot;dew_point\&quot;:272.18,\&quot;wind_speed\&quot;:2.3,\&quot;wind_deg\&quot;:208,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;clouds\&quot;:89,\&quot;pop\&quot;:0,\&quot;uvi\&quot;:0.31},{\&quot;dt\&quot;:1607252400,\&quot;sunrise\&quot;:1607239254,\&quot;sunset\&quot;:1607266912,\&quot;temp\&quot;:{\&quot;day\&quot;:276.18,\&quot;min\&quot;:273.61,\&quot;max\&quot;:276.49,\&quot;night\&quot;:276.19,\&quot;eve\&quot;:275.37,\&quot;morn\&quot;:273.61},\&quot;feels_like\&quot;:{\&quot;day\&quot;:273.3,\&quot;night\&quot;:273.25,\&quot;eve\&quot;:272.57,\&quot;morn\&quot;:270.68},\&quot;pressure\&quot;:1003,\&quot;humidity\&quot;:96,\&quot;dew_point\&quot;:275.67,\&quot;wind_speed\&quot;:1.84,\&quot;wind_deg\&quot;:4,\&quot;weather\&quot;:[{\&quot;id\&quot;:500,\&quot;main\&quot;:\&quot;Rain\&quot;,\&quot;description\&quot;:\&quot;light rain\&quot;,\&quot;icon\&quot;:\&quot;10d\&quot;}],\&quot;clouds\&quot;:100,\&quot;pop\&quot;:0.2,\&quot;rain\&quot;:0.15,\&quot;uvi\&quot;:0.08},{\&quot;dt\&quot;:1607338800,\&quot;sunrise\&quot;:1607325730,\&quot;sunset\&quot;:1607353287,\&quot;temp\&quot;:{\&quot;day\&quot;:281.49,\&quot;min\&quot;:276.69,\&quot;max\&quot;:281.96,\&quot;night\&quot;:280.52,\&quot;eve\&quot;:281.48,\&quot;morn\&quot;:278.26},\&quot;feels_like\&quot;:{\&quot;day\&quot;:276.55,\&quot;night\&quot;:277.15,\&quot;eve\&quot;:277.5,\&quot;morn\&quot;:274.35},\&quot;pressure\&quot;:996,\&quot;humidity\&quot;:77,\&quot;dew_point\&quot;:277.83,\&quot;wind_speed\&quot;:5.32,\&quot;wind_deg\&quot;:121,\&quot;weather\&quot;:[{\&quot;id\&quot;:500,\&quot;main\&quot;:\&quot;Rain\&quot;,\&quot;description\&quot;:\&quot;light rain\&quot;,\&quot;icon\&quot;:\&quot;10d\&quot;}],\&quot;clouds\&quot;:100,\&quot;pop\&quot;:0.28,\&quot;rain\&quot;:0.21,\&quot;uvi\&quot;:0.28},{\&quot;dt\&quot;:1607425200,\&quot;sunrise\&quot;:1607412203,\&quot;sunset\&quot;:1607439665,\&quot;temp\&quot;:{\&quot;day\&quot;:278.67,\&quot;min\&quot;:275.9,\&quot;max\&quot;:278.9,\&quot;night\&quot;:276.17,\&quot;eve\&quot;:275.9,\&quot;morn\&quot;:278.34},\&quot;feels_like\&quot;:{\&quot;day\&quot;:275.92,\&quot;night\&quot;:272.56,\&quot;eve\&quot;:272.7,\&quot;morn\&quot;:274.46},\&quot;pressure\&quot;:1006,\&quot;humidity\&quot;:82,\&quot;dew_point\&quot;:275.86,\&quot;wind_speed\&quot;:1.7,\&quot;wind_deg\&quot;:135,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;clouds\&quot;:100,\&quot;pop\&quot;:0.25,\&quot;uvi\&quot;:0.26},{\&quot;dt\&quot;:1607511600,\&quot;sunrise\&quot;:1607498674,\&quot;sunset\&quot;:1607526046,\&quot;temp\&quot;:{\&quot;day\&quot;:276.97,\&quot;min\&quot;:273.82,\&quot;max\&quot;:277.76,\&quot;night\&quot;:273.82,\&quot;eve\&quot;:274.57,\&quot;morn\&quot;:277.72},\&quot;feels_like\&quot;:{\&quot;day\&quot;:272.66,\&quot;night\&quot;:270.49,\&quot;eve\&quot;:271.67,\&quot;morn\&quot;:274.6},\&quot;pressure\&quot;:1007,\&quot;humidity\&quot;:93,\&quot;dew_point\&quot;:276.08,\&quot;wind_speed\&quot;:3.96,\&quot;wind_deg\&quot;:192,\&quot;weather\&quot;:[{\&quot;id\&quot;:500,\&quot;main\&quot;:\&quot;Rain\&quot;,\&quot;description\&quot;:\&quot;light rain\&quot;,\&quot;icon\&quot;:\&quot;10d\&quot;}],\&quot;clouds\&quot;:94,\&quot;pop\&quot;:1,\&quot;rain\&quot;:6.41,\&quot;uvi\&quot;:0.17},{\&quot;dt\&quot;:1607598000,\&quot;sunrise\&quot;:1607585142,\&quot;sunset\&quot;:1607612432,\&quot;temp\&quot;:{\&quot;day\&quot;:275.91,\&quot;min\&quot;:272.94,\&quot;max\&quot;:275.91,\&quot;night\&quot;:274.55,\&quot;eve\&quot;:273.3,\&quot;morn\&quot;:272.94},\&quot;feels_like\&quot;:{\&quot;day\&quot;:272.73,\&quot;night\&quot;:271.17,\&quot;eve\&quot;:269.93,\&quot;morn\&quot;:269.68},\&quot;pressure\&quot;:1005,\&quot;humidity\&quot;:82,\&quot;dew_point\&quot;:273.31,\&quot;wind_speed\&quot;:1.7,\&quot;wind_deg\&quot;:96,\&quot;weather\&quot;:[{\&quot;id\&quot;:801,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;few clouds\&quot;,\&quot;icon\&quot;:\&quot;02d\&quot;}],\&quot;clouds\&quot;:19,\&quot;pop\&quot;:0,\&quot;uvi\&quot;:1},{\&quot;dt\&quot;:1607684400,\&quot;sunrise\&quot;:1607671606,\&quot;sunset\&quot;:1607698821,\&quot;temp\&quot;:{\&quot;day\&quot;:276.1,\&quot;min\&quot;:273.52,\&quot;max\&quot;:276.1,\&quot;night\&quot;:274.94,\&quot;eve\&quot;:275.12,\&quot;morn\&quot;:274.61},\&quot;feels_like\&quot;:{\&quot;day\&quot;:271.97,\&quot;night\&quot;:271.6,\&quot;eve\&quot;:271.72,\&quot;morn\&quot;:270.77},\&quot;pressure\&quot;:993,\&quot;humidity\&quot;:92,\&quot;dew_point\&quot;:275.01,\&quot;wind_speed\&quot;:3.46,\&quot;wind_deg\&quot;:77,\&quot;weather\&quot;:[{\&quot;id\&quot;:804,\&quot;main\&quot;:\&quot;Clouds\&quot;,\&quot;description\&quot;:\&quot;overcast clouds\&quot;,\&quot;icon\&quot;:\&quot;04d\&quot;}],\&quot;clouds\&quot;:87,\&quot;pop\&quot;:0.03,\&quot;uvi\&quot;:1}]}&quot;</code></pre>
+<pre class="r"><code>resp %&gt;% 
+  .$content %&gt;% 
+  rawToChar() %&gt;% 
+  jsonlite::fromJSON()</code></pre>
+<pre><code>## $lat
+## [1] 53.55
+## 
+## $lon
+## [1] 9.99
+## 
+## $timezone
+## [1] &quot;Europe/Berlin&quot;
+## 
+## $timezone_offset
+## [1] 3600
+## 
+## $current
+## $current$dt
+## [1] 1607117695
+## 
+## $current$sunrise
+## [1] 1607066294
+## 
+## $current$sunset
+## [1] 1607094173
+## 
+## $current$temp
+## [1] 276.12
+## 
+## $current$feels_like
+## [1] 271.44
+## 
+## $current$pressure
+## [1] 994
+## 
+## $current$humidity
+## [1] 74
+## 
+## $current$dew_point
+## [1] 272.09
+## 
+## $current$uvi
+## [1] 0
+## 
+## $current$clouds
+## [1] 0
+## 
+## $current$visibility
+## [1] 10000
+## 
+## $current$wind_speed
+## [1] 3.6
+## 
+## $current$wind_deg
+## [1] 110
+## 
+## $current$weather
+##    id main description icon
+## 1 500 Rain  light rain  10n
+## 
+## $current$rain
+## $current$rain$`1h`
+## [1] 0.12
+## 
+## 
+## 
+## $minutely
+##            dt precipitation
+## 1  1607117700        0.1150
+## 2  1607117760        0.1018
+## 3  1607117820        0.0000
+## 4  1607117880        0.0000
+## 5  1607117940        0.0000
+## 6  1607118000        0.0000
+## 7  1607118060        0.0000
+## 8  1607118120        0.0000
+## 9  1607118180        0.0000
+## 10 1607118240        0.0000
+## 11 1607118300        0.1000
+## 12 1607118360        0.2798
+## 13 1607118420        0.4596
+## 14 1607118480        0.6394
+## 15 1607118540        0.8192
+## 16 1607118600        0.9990
+## 17 1607118660        1.1544
+## 18 1607118720        1.3098
+## 19 1607118780        1.4652
+## 20 1607118840        1.6206
+## 21 1607118900        1.7760
+## 22 1607118960        1.5938
+## 23 1607119020        1.4116
+## 24 1607119080        1.2294
+## 25 1607119140        1.0472
+## 26 1607119200        0.8650
+## 27 1607119260        0.7552
+## 28 1607119320        0.6454
+## 29 1607119380        0.5356
+## 30 1607119440        0.4258
+## 31 1607119500        0.3160
+## 32 1607119560        0.2836
+## 33 1607119620        0.2512
+## 34 1607119680        0.2188
+## 35 1607119740        0.1864
+## 36 1607119800        0.1540
+## 37 1607119860        0.1316
+## 38 1607119920        0.1092
+## 39 1607119980        0.0000
+## 40 1607120040        0.0000
+## 41 1607120100        0.0000
+## 42 1607120160        0.0000
+## 43 1607120220        0.0000
+## 44 1607120280        0.0000
+## 45 1607120340        0.0000
+## 46 1607120400        0.0000
+## 47 1607120460        0.0000
+## 48 1607120520        0.0000
+## 49 1607120580        0.0000
+## 50 1607120640        0.0000
+## 51 1607120700        0.0000
+## 52 1607120760        0.0000
+## 53 1607120820        0.0000
+## 54 1607120880        0.0000
+## 55 1607120940        0.0000
+## 56 1607121000        0.0000
+## 57 1607121060        0.0000
+## 58 1607121120        0.0000
+## 59 1607121180        0.0000
+## 60 1607121240        0.0000
+## 61 1607121300        0.0000
+## 
+## $hourly
+##            dt   temp feels_like pressure humidity dew_point  uvi clouds
+## 1  1607115600 276.12     272.18      994       74    272.09 0.00      0
+## 2  1607119200 275.05     270.52      994       82    272.41 0.00     49
+## 3  1607122800 274.24     270.28      995       89    272.69 0.00     78
+## 4  1607126400 273.31     270.14      994       96    272.80 0.00     94
+## 5  1607130000 273.49     269.22      994       95    272.83 0.00     99
+## 6  1607133600 272.94     268.92      994       97    271.53 0.00    100
+## 7  1607137200 272.48     268.22      994       97    271.33 0.00     95
+## 8  1607140800 272.57     268.43      994       97    271.39 0.00     97
+## 9  1607144400 273.00     269.22      994       97    271.52 0.00     97
+## 10 1607148000 272.21     269.01      994       98    271.40 0.00     98
+## 11 1607151600 271.90     268.50      995       98    271.22 0.00     49
+## 12 1607155200 273.07     269.16      996       97    271.69 0.00     75
+## 13 1607158800 273.60     269.98      997       94    271.88 0.17     83
+## 14 1607162400 274.28     270.67      997       90    271.95 0.24     87
+## 15 1607166000 275.19     271.54      998       84    272.18 0.31     89
+## 16 1607169600 275.63     272.51      998       82    272.51 0.30     92
+## 17 1607173200 275.80     272.55      999       82    272.95 0.26    100
+## 18 1607176800 275.38     271.61      999       85    273.08 0.13    100
+## 19 1607180400 274.53     270.92     1000       90    273.08 0.00    100
+## 20 1607184000 274.63     271.05     1000       92    273.57 0.00    100
+## 21 1607187600 275.08     271.80     1001       95    274.39 0.00    100
+## 22 1607191200 275.35     272.44     1001       95    274.67 0.00    100
+## 23 1607194800 275.21     271.89     1002       95    274.55 0.00    100
+## 24 1607198400 274.61     271.71     1003       95    273.98 0.00    100
+## 25 1607202000 274.37     271.33     1003       94    273.65 0.00    100
+## 26 1607205600 274.18     271.56     1003       94    273.36 0.00    100
+## 27 1607209200 274.07     271.32     1003       93    273.15 0.00    100
+## 28 1607212800 274.07     271.18     1004       93    273.16 0.00    100
+## 29 1607216400 273.97     271.03     1004       94    273.06 0.00     92
+## 30 1607220000 273.79     270.51     1004       95    272.94 0.00     79
+## 31 1607223600 273.62     270.32     1003       96    272.92 0.00     87
+## 32 1607227200 273.74     270.39     1003       95    273.11 0.00     90
+## 33 1607230800 273.61     270.68     1003       96    273.02 0.00     92
+## 34 1607234400 274.07     271.17     1004       95    273.48 0.00     94
+## 35 1607238000 274.66     271.29     1004       95    274.00 0.00    100
+## 36 1607241600 274.82     271.77     1003       96    274.31 0.00    100
+## 37 1607245200 275.93     272.45     1003       94    275.15 0.08    100
+## 38 1607248800 276.27     273.12     1003       94    275.54 0.05    100
+## 39 1607252400 276.18     273.30     1003       96    275.67 0.07    100
+## 40 1607256000 276.22     273.50     1003       96    275.78 0.07    100
+## 41 1607259600 276.49     273.98     1002       95    275.92 0.08    100
+## 42 1607263200 276.37     274.58     1002       96    275.83 0.04    100
+## 43 1607266800 275.95     273.67     1002       96    275.43 0.00    100
+## 44 1607270400 275.96     273.62     1003       95    275.25 0.00    100
+## 45 1607274000 275.37     272.57     1002       95    274.74 0.00    100
+## 46 1607277600 274.97     272.68     1002       96    274.41 0.00    100
+## 47 1607281200 275.07     272.41     1002       96    274.52 0.00    100
+## 48 1607284800 275.25     272.87     1002       96    274.73 0.00    100
+##    visibility wind_speed wind_deg                            weather  pop   1h
+## 1       10000       2.55       94         800, Clear, clear sky, 01n 0.00   NA
+## 2       10000       3.46       92               601, Snow, snow, 13n 0.20 0.87
+## 3       10000       2.72      129    803, Clouds, broken clouds, 04n 0.00   NA
+## 4       10000       1.61      109  804, Clouds, overcast clouds, 04n 0.00   NA
+## 5       10000       3.19       65  804, Clouds, overcast clouds, 04n 0.00   NA
+## 6       10000       2.78       86  804, Clouds, overcast clouds, 04n 0.00   NA
+## 7       10000       3.03       80  804, Clouds, overcast clouds, 04n 0.00   NA
+## 8       10000       2.88       84  804, Clouds, overcast clouds, 04n 0.00   NA
+## 9       10000       2.45      101  804, Clouds, overcast clouds, 04n 0.00   NA
+## 10      10000       1.49      102  804, Clouds, overcast clouds, 04n 0.00   NA
+## 11      10000       1.72      108 802, Clouds, scattered clouds, 03n 0.00   NA
+## 12      10000       2.65      140    803, Clouds, broken clouds, 04d 0.00   NA
+## 13      10000       2.25      170    803, Clouds, broken clouds, 04d 0.00   NA
+## 14      10000       2.26      224  804, Clouds, overcast clouds, 04d 0.00   NA
+## 15      10000       2.30      208  804, Clouds, overcast clouds, 04d 0.00   NA
+## 16      10000       1.57      212  804, Clouds, overcast clouds, 04d 0.00   NA
+## 17      10000       1.78      188  804, Clouds, overcast clouds, 04d 0.00   NA
+## 18      10000       2.55      149  804, Clouds, overcast clouds, 04d 0.00   NA
+## 19      10000       2.30      157  804, Clouds, overcast clouds, 04d 0.00   NA
+## 20      10000       2.35      193  804, Clouds, overcast clouds, 04n 0.00   NA
+## 21      10000       2.12      224  804, Clouds, overcast clouds, 04n 0.00   NA
+## 22      10000       1.65      149  804, Clouds, overcast clouds, 04n 0.00   NA
+## 23      10000       2.20      122  804, Clouds, overcast clouds, 04n 0.00   NA
+## 24      10000       1.47      137  804, Clouds, overcast clouds, 04n 0.00   NA
+## 25      10000       1.58      142  804, Clouds, overcast clouds, 04n 0.00   NA
+## 26      10000       0.94      160  804, Clouds, overcast clouds, 04n 0.00   NA
+## 27      10000       1.08      146  804, Clouds, overcast clouds, 04n 0.00   NA
+## 28      10000       1.28      121  804, Clouds, overcast clouds, 04n 0.00   NA
+## 29      10000       1.36       78  804, Clouds, overcast clouds, 04n 0.00   NA
+## 30      10000       1.84      100    803, Clouds, broken clouds, 04n 0.00   NA
+## 31      10000       1.86       66  804, Clouds, overcast clouds, 04n 0.00   NA
+## 32      10000       1.92       84  804, Clouds, overcast clouds, 04n 0.00   NA
+## 33      10000       1.33       33  804, Clouds, overcast clouds, 04n 0.00   NA
+## 34      10000       1.35       62  804, Clouds, overcast clouds, 04n 0.00   NA
+## 35      10000       2.15       16  804, Clouds, overcast clouds, 04n 0.00   NA
+## 36      10000       1.76       25  804, Clouds, overcast clouds, 04d 0.06   NA
+## 37      10000       2.56       12         500, Rain, light rain, 10d 0.20   NA
+## 38      10000       2.17       24  804, Clouds, overcast clouds, 04d 0.06   NA
+## 39      10000       1.84        4  804, Clouds, overcast clouds, 04d 0.02   NA
+## 40      10000       1.61       23  804, Clouds, overcast clouds, 04d 0.01   NA
+## 41      10000       1.34       40  804, Clouds, overcast clouds, 04d 0.00   NA
+## 42      10000       0.33       42  804, Clouds, overcast clouds, 04d 0.00   NA
+## 43      10000       0.92      120  804, Clouds, overcast clouds, 04d 0.00   NA
+## 44      10000       0.97      105  804, Clouds, overcast clouds, 04n 0.00   NA
+## 45      10000       1.50      114  804, Clouds, overcast clouds, 04n 0.00   NA
+## 46      10000       0.71      121  804, Clouds, overcast clouds, 04n 0.00   NA
+## 47      10000       1.26      110  804, Clouds, overcast clouds, 04n 0.00   NA
+## 48      10000       0.90       50  804, Clouds, overcast clouds, 04n 0.00   NA
+##      1h
+## 1    NA
+## 2    NA
+## 3    NA
+## 4    NA
+## 5    NA
+## 6    NA
+## 7    NA
+## 8    NA
+## 9    NA
+## 10   NA
+## 11   NA
+## 12   NA
+## 13   NA
+## 14   NA
+## 15   NA
+## 16   NA
+## 17   NA
+## 18   NA
+## 19   NA
+## 20   NA
+## 21   NA
+## 22   NA
+## 23   NA
+## 24   NA
+## 25   NA
+## 26   NA
+## 27   NA
+## 28   NA
+## 29   NA
+## 30   NA
+## 31   NA
+## 32   NA
+## 33   NA
+## 34   NA
+## 35   NA
+## 36   NA
+## 37 0.15
+## 38   NA
+## 39   NA
+## 40   NA
+## 41   NA
+## 42   NA
+## 43   NA
+## 44   NA
+## 45   NA
+## 46   NA
+## 47   NA
+## 48   NA
+## 
+## $daily
+##           dt    sunrise     sunset temp.day temp.min temp.max temp.night
+## 1 1607079600 1607066294 1607094173   277.40   273.17   278.01     275.05
+## 2 1607166000 1607152775 1607180541   275.19   271.90   275.80     274.18
+## 3 1607252400 1607239254 1607266912   276.18   273.61   276.49     276.19
+## 4 1607338800 1607325730 1607353287   281.49   276.69   281.96     280.52
+## 5 1607425200 1607412203 1607439665   278.67   275.90   278.90     276.17
+## 6 1607511600 1607498674 1607526046   276.97   273.82   277.76     273.82
+## 7 1607598000 1607585142 1607612432   275.91   272.94   275.91     274.55
+## 8 1607684400 1607671606 1607698821   276.10   273.52   276.10     274.94
+##   temp.eve temp.morn feels_like.day feels_like.night feels_like.eve
+## 1   273.99    273.28         272.39           270.52         269.04
+## 2   275.08    273.00         271.54           271.56         271.80
+## 3   275.37    273.61         273.30           273.25         272.57
+## 4   281.48    278.26         276.55           277.15         277.50
+## 5   275.90    278.34         275.92           272.56         272.70
+## 6   274.57    277.72         272.66           270.49         271.67
+## 7   273.30    272.94         272.73           271.17         269.93
+## 8   275.12    274.61         271.97           271.60         271.72
+##   feels_like.morn pressure humidity dew_point wind_speed wind_deg
+## 1          266.59      990       72    272.01       4.25      151
+## 2          269.22      998       84    272.18       2.30      208
+## 3          270.68     1003       96    275.67       1.84        4
+## 4          274.35      996       77    277.83       5.32      121
+## 5          274.46     1006       82    275.86       1.70      135
+## 6          274.60     1007       93    276.08       3.96      192
+## 7          269.68     1005       82    273.31       1.70       96
+## 8          270.77      993       92    275.01       3.46       77
+##                             weather clouds  pop snow  uvi rain
+## 1              601, Snow, snow, 13d    100 0.20 0.87 0.30   NA
+## 2 804, Clouds, overcast clouds, 04d     89 0.00   NA 0.31   NA
+## 3        500, Rain, light rain, 10d    100 0.20   NA 0.08 0.15
+## 4        500, Rain, light rain, 10d    100 0.28   NA 0.28 0.21
+## 5 804, Clouds, overcast clouds, 04d    100 0.25   NA 0.26   NA
+## 6        500, Rain, light rain, 10d     94 1.00   NA 0.17 6.41
+## 7      801, Clouds, few clouds, 02d     19 0.00   NA 1.00   NA
+## 8 804, Clouds, overcast clouds, 04d     87 0.03   NA 1.00   NA</code></pre>
+<pre class="r"><code># WEBSCRAPING ----
+
+# 1.0 LIBRARIES ----
+
+library(tidyverse) # Main Package - Loads dplyr, purrr, etc.
+library(rvest)     # HTML Hacking &amp; Web Scraping
+library(xopen)     # Quickly opening URLs
+library(jsonlite)  # converts JSON files to R objects
+library(glue)      # concatenate strings
+library(stringi)   # character string/text processing
+
+# main-navigation-category-with-tiles__link 
+# main-navigation-category-with-tiles__link 
+
+# 1.1 COLLECT PRODUCT FAMILIES ----
+
+url_home          &lt;- &quot;https://www.radon-bikes.de/&quot;
+# xopen(url_home) # Open links directly from RStudio to inspect them
+# Read in the HTML for the entire webpage
+html_home &lt;- read_html(url_home)
+
+# Web scrape the ids for the families
+bike_cat_url_tbl &lt;- html_home %&gt;%
+  
+  # Get the nodes for the families ...
+  html_nodes(css = &quot;.megamenu__item &gt; a&quot;) %&gt;%
+  # ...and extract the information of the id attribute
+  html_attr(&#39;href&#39;) %&gt;%
+  
+  
+  
+  # Convert vector to tibble
+  enframe(name = &quot;position&quot;, value = &quot;cat_subcat_url&quot;)  %&gt;%
+
+  # Add the domain, because we will get only the subdirectories
+  mutate(
+    full_url = glue(&quot;https://www.radon-bikes.de{cat_subcat_url}&quot;)
+  )
+
+bike_cat_url_tbl</code></pre>
+<pre><code>## # A tibble: 10 x 3
+##    position cat_subcat_url            full_url                                  
+##       &lt;int&gt; &lt;chr&gt;                     &lt;glue&gt;                                    
+##  1        1 /mountainbike/hardtail/   https://www.radon-bikes.de/mountainbike/h…
+##  2        2 /mountainbike/fullsuspen… https://www.radon-bikes.de/mountainbike/f…
+##  3        3 /trekking-cross/trekking/ https://www.radon-bikes.de/trekking-cross…
+##  4        4 /trekking-cross/cross/    https://www.radon-bikes.de/trekking-cross…
+##  5        5 /e-bike/mountainbike/     https://www.radon-bikes.de/e-bike/mountai…
+##  6        6 /e-bike/trekking/         https://www.radon-bikes.de/e-bike/trekkin…
+##  7        7 /roadbike/carbon/         https://www.radon-bikes.de/roadbike/carbo…
+##  8        8 /roadbike/alu/            https://www.radon-bikes.de/roadbike/alu/  
+##  9        9 /wear/radon-wear/         https://www.radon-bikes.de/wear/radon-wea…
+## 10       10 /wear/accessoires/        https://www.radon-bikes.de/wear/accessoir…</code></pre>
+<pre class="r"><code>for(i in 1:8) {
+  showAllModelLink &lt;- bike_cat_url_tbl$full_url[i]
+  # xopen(showAllModelLink)
+  htmlStuffs &lt;- read_html(showAllModelLink)
+  
+  
+  bikegrid_url &lt;- htmlStuffs %&gt;%
+    
+    # Get the nodes for the families ...
+    html_nodes(css = &quot;.a-button--large&quot;) %&gt;%
+    # ...and extract the information of the id attribute
+    html_attr(&#39;href&#39;) 
+  
+  current_url &lt;- bike_cat_url_tbl$full_url[i]
+  bike_cat_url_tbl$full_url[i] &lt;- glue(&quot;https://www.radon-bikes.de{bikegrid_url}&quot;)
+}
+
+bike_cat_url_tbl</code></pre>
+<pre><code>## # A tibble: 10 x 3
+##    position cat_subcat_url           full_url                                   
+##       &lt;int&gt; &lt;chr&gt;                    &lt;glue&gt;                                     
+##  1        1 /mountainbike/hardtail/  https://www.radon-bikes.de/mountainbike/ha…
+##  2        2 /mountainbike/fullsuspe… https://www.radon-bikes.de/mountainbike/fu…
+##  3        3 /trekking-cross/trekkin… https://www.radon-bikes.de/trekking-cross/…
+##  4        4 /trekking-cross/cross/   https://www.radon-bikes.de/trekking-cross/…
+##  5        5 /e-bike/mountainbike/    https://www.radon-bikes.de/e-bike/mountain…
+##  6        6 /e-bike/trekking/        https://www.radon-bikes.de/e-bike/trekking…
+##  7        7 /roadbike/carbon/        https://www.radon-bikes.de/roadbike/carbon…
+##  8        8 /roadbike/alu/           https://www.radon-bikes.de/roadbike/alu/bi…
+##  9        9 /wear/radon-wear/        https://www.radon-bikes.de/wear/radon-wear/
+## 10       10 /wear/accessoires/       https://www.radon-bikes.de/wear/accessoire…</code></pre>
+<pre class="r"><code>final_model_price_tbl &lt;- data.frame(matrix(ncol = 2, nrow = 0))
+x &lt;- c(&quot;name&quot;, &quot;price&quot;)
+colnames(final_model_price_tbl) &lt;- x
+
+
+for(i in 1:8) {
+ 
+  finalBikeModelListLink &lt;- bike_cat_url_tbl$full_url[i]
+  # xopen(finalBikeModelListLink)
+  htmlStuffs_final &lt;- read_html(finalBikeModelListLink)
+  
+  
+  final_model_names &lt;- htmlStuffs_final %&gt;%
+    
+    html_nodes(css = &quot;.m-bikegrid__info .a-heading--small&quot;) %&gt;%
+    html_text() %&gt;%
+    enframe(name = &quot;position&quot;, value = &quot;name&quot;)
+  
+  final_model_names
+  
+  final_price &lt;- htmlStuffs_final %&gt;%
+    
+    html_nodes(css = &quot;.m-bikegrid__price.currency_eur .m-bikegrid__price--active&quot;) %&gt;%
+    html_text() %&gt;%
+    enframe(name = &quot;position&quot;, value = &quot;price&quot;)
+  
+  final_price
+  
+  
+  semifinal_model_price_tbl &lt;- left_join(final_model_names, final_price) %&gt;% 
+    select(name, price)
+  
+  
+  final_model_price_tbl &lt;- rbind(final_model_price_tbl, semifinal_model_price_tbl)
+   
+}
+
+final_model_price_tbl</code></pre>
+<pre><code>## # A tibble: 115 x 2
+##    name                                                                    price
+##    &lt;chr&gt;                                                                   &lt;chr&gt;
+##  1 &quot;\n                                    JEALOUS 8.0\n                  … 2599…
+##  2 &quot;\n                                    JEALOUS 9.0\n                  … 2999…
+##  3 &quot;\n                                    JEALOUS 10.0\n                 … 3999…
+##  4 &quot;\n                                    JEALOUS 10.0 EA\n              … 5299…
+##  5 &quot;\n                                    JEALOUS 10.0\n                 … 3699…
+##  6 &quot;\n                                    JEALOUS 10.0 EA\n              … 3799€
+##  7 &quot;\n                                    NEW JEALOUS SUPERLITE 1X\n     … 999 €
+##  8 &quot;\n                                    JEALOUS AL 8.0\n               … 999 €
+##  9 &quot;\n                                    JEALOUS AL 8.0 HD\n            … 1299…
+## 10 &quot;\n                                    JEALOUS AL 9.0\n               … 1499…
+## # … with 105 more rows</code></pre>
+<pre class="r"><code>final_model_price_tbl &lt;- final_model_price_tbl%&gt;% 
+  mutate(across(name, str_replace_all, &quot;\n&quot;, &quot;&quot;))
+
+final_model_price_tbl &lt;- final_model_price_tbl%&gt;% 
+  mutate(across(name, str_replace_all, &quot;[ ]{2,}&quot;, &quot;&quot;))
+
+final_model_price_tbl</code></pre>
+<pre><code>## # A tibble: 115 x 2
+##    name                     price 
+##    &lt;chr&gt;                    &lt;chr&gt; 
+##  1 JEALOUS 8.0              2599 €
+##  2 JEALOUS 9.0              2999 €
+##  3 JEALOUS 10.0             3999 €
+##  4 JEALOUS 10.0 EA          5299 €
+##  5 JEALOUS 10.0             3699 €
+##  6 JEALOUS 10.0 EA          3799€ 
+##  7 NEW JEALOUS SUPERLITE 1X 999 € 
+##  8 JEALOUS AL 8.0           999 € 
+##  9 JEALOUS AL 8.0 HD        1299 €
+## 10 JEALOUS AL 9.0           1499 €
+## # … with 105 more rows</code></pre>
+</div>
+<div id="challenge-4" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Challenge 4</h1>
+<ol style="list-style-type: lower-alpha">
+<li><p>Get some data via an API. There are millions of providers, that offer API access for free and have good documentation about how to query their service. You just have to google them. You can use whatever service you want. For example, you can get data about your listening history (spotify), get data about flights (skyscanner) or just check the weather forecast.</p></li>
+<li><p>Scrape one of the competitor websites of canyon (either <a href="https://www.rosebikes.de/" class="uri">https://www.rosebikes.de/</a> or <a href="https://www.radon-bikes.de" class="uri">https://www.radon-bikes.de</a>) and create a small database. The database should contain the model names and prices for at least one category. Use the selectorgadget to get a good understanding of the website structure. For the challenge a) I am going use Rick and Morty API from <a href="https://rickandmortyapi.com" class="uri">https://rickandmortyapi.com</a>.</p></li>
+</ol>
+<div id="third-level-header" class="section level3" number="3.0.1">
+<h3 number="3.0.1"><span class="header-section-number">3.0.1</span> third level header</h3>
 <p>Here’s an even lower level header</p>
 </div>
 </div>
-<div id="my-second-post-note-the-order" class="section level1" number="3">
-<h1 number="3"><span class="header-section-number">3</span> My second post (note the order)</h1>
+<div id="my-second-post-note-the-order" class="section level1" number="4">
+<h1 number="4"><span class="header-section-number">4</span> My second post (note the order)</h1>
 <p>Last compiled: 2020-12-04</p>
 <p>I’m writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom</p>
 </div>
-<div id="adding-r-stuff" class="section level1" number="4">
-<h1 number="4"><span class="header-section-number">4</span> Adding R stuff</h1>
+<div id="adding-r-stuff" class="section level1" number="5">
+<h1 number="5"><span class="header-section-number">5</span> Adding R stuff</h1>
 <p>So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place.</p>
 <p>So, let’s say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:</p>
 <pre class="r"><code>samples &lt;- rnorm(100, mean=0, sd=1)
 hist(samples)</code></pre>
-<p><img src="journal_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="journal_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You’ll learn that all of these things and more can be customized in each R code block.</p>
 </div>
 
