@@ -102,27 +102,10 @@ sales_by_states_tbl %>%
    b) Scrape one of the competitor websites of canyon (either https://www.rosebikes.de/ or https://www.radon-bikes.de) and create a small database. The database should contain the model names and prices for at least one category. Use the selectorgadget to get a good understanding of the website structure.
    For the challenge a) I am going use Rick and Morty API from https://rickandmortyapi.com.
     
-```{r}
-#load libraries
-library(tidyverse)
-library(httr)
-library(jsonlite)
-
-# #url <- httr::GET("https://rickandmortyapi.com/api/")
-# 
-# rick_and_morty <- function(path) {
-#   url <- modify_url(url = "https://rickandmortyapi.com/api/", path = glue("/api{path}"))
-#   resp <- GET(url)
-#   stop_for_status(resp)
-# }
-# rawToChar(rick_and_morty(character/1)) %>%
-#   jsonlite::fromJSON()
 
 
 
-```
-```{r, code=readLines("./Data_Acquisition_Challenge_1.R")}
-```
+
 
 
 
