@@ -112,9 +112,7 @@ resp <- rick_and_morty_character("/3") #enter the number of character
 content(resp, as = "parsed")
 ```
 
-```{r, code=readLines("./data_acquisition_ex_2.R")}
-#Data acquisition challenge b)
-```
+
 
 
 ### third level header
