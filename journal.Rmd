@@ -22,7 +22,7 @@ Last compiled: `r Sys.Date()`
 Analyze the sales by location (state) with a bar plot. Since state and city are multiple features (variables), they should be split. Which state has the highes revenue? 
 
 ## Load libraries:
-```{r}
+```
 library(tidyverse)
 library(readxl)
 
@@ -67,6 +67,7 @@ bike_orderlines_wrangled_tbl
 Creating relevant tables and using gglpot2 package for data visualization.
 
 ```{r}
+library(lubridate)
 sales_by_states_tbl <- bike_orderlines_wrangled_tbl %>%
   select(order_date, total_price, state) %>%
   mutate(year = year(order_date)) %>%
@@ -102,6 +103,8 @@ sales_by_states_tbl %>%
    b) Scrape one of the competitor websites of canyon (either https://www.rosebikes.de/ or https://www.radon-bikes.de) and create a small database. The database should contain the model names and prices for at least one category. Use the selectorgadget to get a good understanding of the website structure.
    
 ```{r}
+library(httr)
+library(glue)
 #Data acquisition challenge a)
 rick_and_morty_character <- function(path) {
   url <- modify_url(url = "https://rickandmortyapi.com", path = glue("/api/character/{path}"))
