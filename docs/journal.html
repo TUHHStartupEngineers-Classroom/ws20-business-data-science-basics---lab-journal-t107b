@@ -15,7 +15,6 @@
 
 <title>Journal (reproducible report)</title>
 
-<script src="site_libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -411,23 +410,23 @@ div.tocify {
 </div>
 
 
-<div id="challenge-number1" class="section level1" number="1">
-<h1 number="1"><span class="header-section-number">1</span> Challenge number#1</h1>
+<div id="challenge-1" class="section level1">
+<h1><span class="header-section-number">1</span> Challenge #1</h1>
 <p>Last compiled: 2020-12-05</p>
 <p>Analyze the sales by location (state) with a bar plot. Since state and city are multiple features (variables), they should be split. Which state has the highes revenue?</p>
-<div id="load-libraries" class="section level2" number="1.1">
-<h2 number="1.1"><span class="header-section-number">1.1</span> Load libraries:</h2>
+<div id="load-libraries" class="section level2">
+<h2><span class="header-section-number">1.1</span> Load libraries:</h2>
 <pre class="r"><code>library(tidyverse)
 library(readxl)</code></pre>
 </div>
-<div id="import-files" class="section level2" number="1.2">
-<h2 number="1.2"><span class="header-section-number">1.2</span> Import files:</h2>
+<div id="import-files" class="section level2">
+<h2><span class="header-section-number">1.2</span> Import files:</h2>
 <pre class="r"><code>bikes_tbl &lt;- readxl::read_excel(&quot;./00_data/01_bike_sales/01_raw_data/bikes.xlsx&quot;)
 orderlines_tbl &lt;- readxl::read_excel(&quot;./00_data/01_bike_sales/01_raw_data/orderlines.xlsx&quot;)
 bikeshops_tbl &lt;- readxl::read_excel(&quot;./00_data/01_bike_sales/01_raw_data/bikeshops.xlsx&quot;)</code></pre>
 </div>
-<div id="examine-data-for-imported-tables" class="section level2" number="1.3">
-<h2 number="1.3"><span class="header-section-number">1.3</span> Examine data for imported tables:</h2>
+<div id="examine-data-for-imported-tables" class="section level2">
+<h2><span class="header-section-number">1.3</span> Examine data for imported tables:</h2>
 <pre class="r"><code>bikeshops_tbl</code></pre>
 <pre><code>## # A tibble: 30 x 5
 ##    bikeshop.id name                  location                          lat   lng
@@ -474,8 +473,8 @@ bikeshops_tbl &lt;- readxl::read_excel(&quot;./00_data/01_bike_sales/01_raw_data
 ## 10    2120 Aeroa…       2020 carbon           7.2   3219 Road - … female https:…
 ## # … with 221 more rows</code></pre>
 </div>
-<div id="data-manipulation.-join-tables" class="section level2" number="1.4">
-<h2 number="1.4"><span class="header-section-number">1.4</span> Data manipulation. Join tables:</h2>
+<div id="data-manipulation.-join-tables" class="section level2">
+<h2><span class="header-section-number">1.4</span> Data manipulation. Join tables:</h2>
 <pre class="r"><code>bike_orderlines_joined_tbl &lt;- orderlines_tbl %&gt;%
   dplyr::left_join(bikes_tbl, by = c(&quot;product.id&quot; = &quot;bike.id&quot;)) %&gt;%
   dplyr::left_join(bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))
@@ -502,8 +501,8 @@ bike_orderlines_joined_tbl %&gt;% glimpse()</code></pre>
 ## $ lat            &lt;dbl&gt; 53.57532, 53.57532, 53.07379, 53.07379, 48.78234, 48.7…
 ## $ lng            &lt;dbl&gt; 10.015340, 10.015340, 8.826754, 8.826754, 9.180819, 9.…</code></pre>
 </div>
-<div id="wrangling-data" class="section level2" number="1.5">
-<h2 number="1.5"><span class="header-section-number">1.5</span> Wrangling data:</h2>
+<div id="wrangling-data" class="section level2">
+<h2><span class="header-section-number">1.5</span> Wrangling data:</h2>
 <pre class="r"><code>bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
     tidyr::separate(col    = location,
            into   = c(&quot;city&quot;, &quot;state&quot;),
@@ -532,8 +531,8 @@ bike_orderlines_wrangled_tbl</code></pre>
 ## #   frame_material &lt;chr&gt;, weight &lt;dbl&gt;, price &lt;dbl&gt;, category &lt;chr&gt;,
 ## #   gender &lt;chr&gt;, url &lt;chr&gt;, bikeshop &lt;chr&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
 </div>
-<div id="business-insights" class="section level2" number="1.6">
-<h2 number="1.6"><span class="header-section-number">1.6</span> Business insights</h2>
+<div id="business-insights" class="section level2">
+<h2><span class="header-section-number">1.6</span> Business insights</h2>
 <p>Creating relevant tables and using gglpot2 package for data visualization.</p>
 <pre class="r"><code>sales_by_states_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
   select(order_date, total_price, state) %&gt;%
@@ -578,8 +577,8 @@ sales_by_states_tbl</code></pre>
 ## [1] &quot;labels&quot;</code></pre>
 </div>
 </div>
-<div id="challenge-2" class="section level1" number="2">
-<h1 number="2"><span class="header-section-number">2</span> Challenge 2</h1>
+<div id="challenge-2" class="section level1">
+<h1><span class="header-section-number">2</span> Challenge #2</h1>
 <ol style="list-style-type: lower-alpha">
 <li><p>Get some data via an API. There are millions of providers, that offer API access for free and have good documentation about how to query their service. You just have to google them. You can use whatever service you want. For example, you can get data about your listening history (spotify), get data about flights (skyscanner) or just check the weather forecast.</p></li>
 <li><p>Scrape one of the competitor websites of canyon (either <a href="https://www.rosebikes.de/" class="uri">https://www.rosebikes.de/</a> or <a href="https://www.radon-bikes.de" class="uri">https://www.radon-bikes.de</a>) and create a small database. The database should contain the model names and prices for at least one category. Use the selectorgadget to get a good understanding of the website structure.</p></li>
@@ -735,18 +734,18 @@ content(resp, as = &quot;parsed&quot;)</code></pre>
 ## 
 ## $created
 ## [1] &quot;2017-11-04T19:09:56.428Z&quot;</code></pre>
-<div id="third-level-header" class="section level3" number="2.0.1">
-<h3 number="2.0.1"><span class="header-section-number">2.0.1</span> third level header</h3>
+<div id="third-level-header" class="section level3">
+<h3><span class="header-section-number">2.0.1</span> third level header</h3>
 <p>Here’s an even lower level header</p>
 </div>
 </div>
-<div id="my-second-post-note-the-order" class="section level1" number="3">
-<h1 number="3"><span class="header-section-number">3</span> My second post (note the order)</h1>
+<div id="my-second-post-note-the-order" class="section level1">
+<h1><span class="header-section-number">3</span> My second post (note the order)</h1>
 <p>Last compiled: 2020-12-05</p>
 <p>I’m writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom</p>
 </div>
-<div id="adding-r-stuff" class="section level1" number="4">
-<h1 number="4"><span class="header-section-number">4</span> Adding R stuff</h1>
+<div id="adding-r-stuff" class="section level1">
+<h1><span class="header-section-number">4</span> Adding R stuff</h1>
 <p>So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place.</p>
 <p>So, let’s say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:</p>
 <pre class="r"><code>samples &lt;- rnorm(100, mean=0, sd=1)
