@@ -103,6 +103,7 @@ sales_by_states_tbl %>%
    b) Scrape one of the competitor websites of canyon (either https://www.rosebikes.de/ or https://www.radon-bikes.de) and create a small database. The database should contain the model names and prices for at least one category. Use the selectorgadget to get a good understanding of the website structure.
    
 ```{r}
+#challange 2a
 library(httr)
 library(glue)
 #Data acquisition challenge a)
@@ -115,6 +116,227 @@ resp <- rick_and_morty_character("/3") #enter the number of character
 content(resp, as = "parsed")
 ```
 
+```{r}
+library(tidyverse) 
+library(rvest)     
+library(jsonlite)  
+library(glue)      
+library(stringi)   
+library(rvest)
+library(stringr)
+
+url_home <- "https://www.radon-bikes.de/" %>%
+#url_home <- xml2::read_html(url)
+read_html()
+
+bike_category_tbl <- url_home %>%
+  html_nodes(css = ".megamenu__item> a") %>%
+  html_attr('href') %>% 
+  enframe(name = "position", value = "subdirectory") %>%
+  mutate(
+    url = glue("https://www.radon-bikes.de{subdirectory}bikegrid")
+  )
+
+bike_category_tbl
 
 
+bike_category_url <- bike_category_tbl$url[6]
+
+html_bike_category  <- xml2::read_html(bike_category_url)
+bike_url_tbl        <- html_bike_category %>%
+  
+  html_nodes(css = ".m-bikegrid__item > a") %>%
+  html_attr("href") %>%
+  enframe(name = "position", value = "category_url") %>%
+  mutate(
+  url = glue("https://www.radon-bikes.de{category_url}")
+      )
+bike_url_tbl 
+
+
+#extract descriptions 
+
+bike_price_tbl <- html_bike_category %>%
+  html_nodes('.m-bikegrid__price.currency_eur .m-bikegrid__price--active') %>%
+  html_text() %>%
+  enframe(name = "position", value = "price")
+
+bike_price_tbl
+
+bike_title_tbl <- html_bike_category %>%
+  html_nodes('.m-bikegrid__info .a-heading--small') %>%
+  html_text() %>%
+  enframe(name = "position", value = "title")
+
+bike_title_tbl
+
+
+
+bike_tbl1 <- merge(x = bike_title_tbl, y = bike_price_tbl, by = "position")
+bike_tbl2 <- merge(x = bike_tbl1, y = bike_url_tbl, by = "position")
+
+
+
+
+bike_tbl2 %>% 
+  select(-position)
+
+
+bike_tbl2
+```
+
+
+# Challenge #3
+
+```{r eval=FALSE}
+library(tidyverse)
+library(vroom)
+library(magrittr)
+library(lubridate)
+library(data.table)
+
+
+
+# DATA IMPORT ----
+patent <-  "./patent.tsv"
+patent_tbl <- fread(patent)
+setnames(patent_tbl, "id", "patent_id")
+
+assignee  <-   "./assignee.tsv"
+assignee_tbl <- fread(assignee)
+setnames(assignee_tbl, "id", "assignee_id")
+
+patent_assignee <- "./patent_assignee.tsv"
+patent_assignee_tbl<- fread(patent_assignee)
+
+uspc <- "./uspc.tsv"
+uspc_tbl<- fread(uspc)
+
+
+
+# 1. Patent Dominance
+assignee_patentAssignee_merged <- merge(assignee_tbl, patent_assignee_tbl, by='assignee_id')
+na.omit(assignee_patentAssignee_merged, cols="organization")
+
+# US company with most patents
+assignee_patentAssignee_merged [, .N, by = organization][order(-N)] %>% head(1)%>%na.omit()
+
+# 10 US companies with most assigned/granted patents
+assignee_patentAssignee_merged [, .N, by = organization][order(-N)]%>%na.omit() %>% head(10)
+
+
+
+
+#2. Recent patent activity
+assignee_patentAssignee_patent_merged <- merge(assignee_patentAssignee_merged, patent_tbl, by='patent_id') 
+assignee_patentAssignee_patent_merged_view <- assignee_patentAssignee_patent_merged[1:2]
+
+# US company with most patents granted in 2019
+assignee_patentAssignee_patent_merged [lubridate::year(date) == 2019, .N, by = organization][order(-N)]%>%na.omit() %>% head(1)
+
+# 10 companies with most new granted patents in 2019
+assignee_patentAssignee_patent_merged [lubridate::year(date) == 2019 & kind=="B1", .N, by = organization][order(-N)]%>%na.omit() %>% head(10)
+
+
+
+
+# 3. Innovation in Tech
+assignee_patentAssignee_uspc_merged <- merge(assignee_patentAssignee_merged, uspc_tbl, by='patent_id')
+assignee_patentAssignee_uspc_merged_view <- assignee_patentAssignee_uspc_merged[1:2]
+
+# Most innovative tech sector
+patent_tbl[, .N, by = type][order(-N)] %>% head(1)
+
+# Top 5 USPTO main classes of their patents
+assignee_patentAssignee_uspc_merged[organization=="International Business Machines Corporation", .N, by = mainclass_id][order(-N)]%>% head(5)
+```
+
+
+# Challenge #4
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(ggplot2)
+library(scales)
+library(forcats)
+library(ggrepel)
+
+
+
+covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
+
+
+covid_data_tbl_compressed <- covid_data_tbl %>%
+  
+  filter((countriesAndTerritories == "Europe" |
+            countriesAndTerritories == "Germany" | 
+            countriesAndTerritories == "United_Kingdom" | 
+            countriesAndTerritories == "France" | 
+            countriesAndTerritories == "Spain" | 
+            countriesAndTerritories == "United_States_of_America") & year == "2020")%>%
+  group_by(countriesAndTerritories, month, year) %>%
+  summarise(total_case = sum(cases)) %>%
+  ungroup()%>%
+  mutate(month=lubridate::month(month,label = TRUE,abbr = TRUE))
+
+covid_data_cumulative_case_tbl <- covid_data_tbl_compressed %>% mutate(cumulative_case=cumsum(total_case))
+
+covid_data_cumulative_case_tbl %>%
+  
+  ggplot(aes(month, cumulative_case, group=countriesAndTerritories, color = countriesAndTerritories)) +
+  
+  geom_line(size=.5) +
+  scale_y_continuous(labels = scales::dollar_format(scale  = 1/1e6, 
+                                                    prefix = "", 
+                                                    suffix = "M €"))+
+  theme_minimal() +
+  theme(legend.position  = "right", 
+        legend.direction = "vertical",
+        axis.text.x = element_text(angle = 45)) 
+```
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(ggplot2)
+library(scales)
+library(forcats)
+library(ggrepel)
+library(maps)
+
+
+
+covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
+world <- map_data("world")
+
+covid_data_tbl <- covid_data_tbl%>% 
+  mutate(across(countriesAndTerritories, str_replace_all, "_", " ")) %>%
+  mutate(countriesAndTerritories = case_when(
+    
+    countriesAndTerritories == "United Kingdom" ~ "UK",
+    countriesAndTerritories == "United States of America" ~ "USA",
+    countriesAndTerritories == "Czechia" ~ "Czech Republic",
+    countriesAndTerritories == "Bonaire, Saint Eustatius and Saba" ~ "Bonaire",
+    TRUE ~ countriesAndTerritories
+  ))
+
+
+covid_data_tbl <- covid_data_tbl %>%
+  rename(region=countriesAndTerritories)
+
+covid_data_tbl <- covid_data_tbl %>%
+  group_by(region)%>%
+  summarise(total_deaths = sum(deaths), population = mean(popData2019)) %>%
+  mutate(mortality_rate = (total_deaths / population)*100) %>%
+  ungroup()
+
+
+world_covid_data_tbl <- dplyr::left_join(world, covid_data_tbl, by=c("region"))
+
+world_covid_data_tbl %>%
+  ggplot(aes(map_id = region)) +
+  geom_map(aes(fill = mortality_rate), map = world, color = "white") +
+  expand_limits(x = world_covid_data_tbl$long, y = world_covid_data_tbl$lat) +
+  scale_fill_gradient(high = "#541e2b", low = "#ff8282", na.value = "grey50",  guide = "colorbar")
+```
 
