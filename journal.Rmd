@@ -251,8 +251,10 @@ patent_tbl[, .N, by = type][order(-N)] %>% head(1)
 assignee_patentAssignee_uspc_merged[organization=="International Business Machines Corporation", .N, by = mainclass_id][order(-N)]%>% head(5)
 ```
 
+I was not able to see the outpout, cause everytime it's executed Rstudio gets terminated.
 
 # Challenge #4
+
 ```{r}
 library(tidyverse)
 library(ggthemes)
